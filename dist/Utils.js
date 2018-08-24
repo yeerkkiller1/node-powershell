@@ -41,17 +41,38 @@ var ShellStream = exports.ShellStream = function (_Writable) {
     return _this;
   }
 
+  function bufferEndsWith(buffer, suffix) {
+   if(buffer.length < suffix.length) return false;
+   for(let i = 0; i < suffix.length; i++) {
+     if(suffix[i] !== buffer[buffer.length - suffix.length + i]) {
+       return false;
+     }
+   }
+   return true;
+ }
+ 
   _createClass(ShellStream, [{
     key: '_write',
     value: function _write(chunk, encoding, cb) {
       // console.log(`${this.stdout.length} - ${chunk.toString()}`);
-      if (this.EOIEOL.compare(chunk) !== 0 && this.EOI.compare(chunk) !== 0) {
-        this.stdout.push(chunk);
-      } else {
-        this.emit('EOI', Buffer.concat(this.stdout).toString());
-        this.stdout = [];
-      }
-      cb();
+      var EOI = false;
+     if(bufferEndsWith(chunk, this.EOIEOL)) {
+       EOI = true;
+       chunk = chunk.slice(0, -this.EOIEOL.length);
+     } else if(bufferEndsWith(chunk, this.EOI)) {
+       EOI = true;
+       chunk = chunk.slice(0, -this.EOI.length);
+     }
+     console.log("CHUNK", EOI);
+
+     if (chunk.length > 0) {
+       this.stdout.push(chunk);
+     }
+     if(EOI) {
+       this.emit('EOI', Buffer.concat(this.stdout).toString());
+       this.stdout = [];
+     }
+     cb();
     }
   }]);
 
