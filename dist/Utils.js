@@ -63,8 +63,6 @@ var ShellStream = exports.ShellStream = function (_Writable) {
        EOI = true;
        chunk = chunk.slice(0, -this.EOI.length);
      }
-     console.log("CHUNK", EOI);
-
      if (chunk.length > 0) {
        this.stdout.push(chunk);
      }
