@@ -2,6 +2,16 @@ const os           = require('os');
 const { Writable } = require('stream');
 const Promise      = require('bluebird');
 
+function bufferEndsWith(buffer, suffix) {
+  if(buffer.length < suffix.length) return false;
+  for(let i = 0; i < suffix.length; i++) {
+    if(suffix[i] !== buffer[buffer.length - suffix.length + i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export class ShellStream extends Writable {
   constructor(EOI, options) {
     super(options);
@@ -11,9 +21,20 @@ export class ShellStream extends Writable {
   }
   _write(chunk, encoding, cb) {
     // console.log(`${this.stdout.length} - ${chunk.toString()}`);
-    if(this.EOIEOL.compare(chunk) !== 0 && this.EOI.compare(chunk) !== 0) {
+    var EOI = false;
+    if(bufferEndsWith(chunk, this.EOIEOL)) {
+      EOI = true;
+      chunk = chunk.slice(0, -this.EOIEOL.length);
+    } else if(bufferEndsWith(chunk, this.EOI)) {
+      EOI = true;
+      chunk = chunk.slice(0, -this.EOI.length);
+    }
+    console.log("CHUNK", EOI);
+
+    if (chunk.length > 0) {
       this.stdout.push(chunk);
-    } else {
+    }
+    if(EOI) {
       this.emit('EOI', Buffer.concat(this.stdout).toString());
       this.stdout = [];
     }
