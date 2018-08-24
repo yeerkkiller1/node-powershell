@@ -24,7 +24,7 @@ export class Shell extends EventEmitter {
     verbose: verbose = true,
     executionPolicy: executionPolicy = 'Unrestricted',
     noProfile: noProfile = true,
-    EOI: EOI = 'EOI',
+    EOI: EOI = 'EOI' + +new Date() + Math.random(),
     version
   } = {}) {
     super();
