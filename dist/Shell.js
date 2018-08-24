@@ -76,7 +76,7 @@ var Shell = exports.Shell = function (_EventEmitter) {
         _ref$noProfile = _ref.noProfile,
         noProfile = _ref$noProfile === undefined ? true : _ref$noProfile,
         _ref$EOI = _ref.EOI,
-        EOI = _ref$EOI === undefined ? 'EOI' : _ref$EOI,
+        EOI = _ref$EOI === undefined ? 'EOI' + +new Date() + Math.random() : _ref$EOI,
         version = _ref.version;
 
     _classCallCheck(this, Shell);
